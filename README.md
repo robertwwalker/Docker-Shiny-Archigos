@@ -1,25 +1,49 @@
-# Shiny app in a docker container simple example repo
+# Shiny app in a docker container
 
-This repo accompanies an article [here](https://blog.sellorm.com/2021/04/25/shiny-app-in-docker/).
 
-It's the classic geyser demo shiny app with a few bits added to allow you to see things inside the container, like what packages you have installed.
+I started with a fork of a repo accompanies an article [here](https://blog.sellorm.com/2021/04/25/shiny-app-in-docker/).
+
+
+# 'image' directory
+
+This contains the entirety of the image files.
+
+- Dockerfile
+- `shiny-server.conf`
+- `shiny-server.sh`
+- the *app* directory
+  + `app.R` the single app file.
+  + the *data* folder
+    + `archigos.rda` containing the key data files.
+
+
+The *app* directory contains only those things which are needed for the app to run.
+In our case that's the `app.R` file and the rda file we wrote out earlier.
+
+The .rda file comes from the following R code.
+
+```
+library(tidyverse)
+library(haven)
+library(magrittr)
+library(utf8)
+library(lubridate)
+Archigos <- read_dta(url("http://www.rochester.edu/college/faculty/hgoemans/Archigos_4.1_stata14.dta"))
+Archigos %<>% mutate(leader = utf8_encode(leader))
+Archigos %<>% mutate(tenure = as.duration(eindate %--% eoutdate)) %>% # Create duration for each spell  
+  mutate(tenureY = tenure / dyears(1))    # Measure duration in years.
+```
+
 
 ## Dockerfile and project layout
 
-The Dockerfile here is provided as a foundation upon which to build your own.
-Everything else in this repo is a toy to demonstrate how the project layout should work.
+The Dockerfile here has everything that we need to build the Docker container.  There is [a blog post on the entirety of this exercise here.](https://robertwwalker.github.io/posts/Docker-Shiny/)
 
-## 'data-prep' directory
 
-This directory contains a sample csv file and a 'data-prep' script that basically just loads the csv and writes it back out as an rds file in the shiny app directory. 
+## `shiny-server.conf`
 
-Naturally a real project would do real data prep!
+The configuration files for the shiny server.
 
-## 'shiny-app' directory
+## `shiny-server.sh`
 
-This directory contains only those things which are needed for the app to run.
-In our case that's the `app.R` file and the rds file we wrote out earlier.
-
-Again, these files are demonstration toys. Your applications and data will naturally be more complex.
-
-Please see the blog post at the top of the README for more information.
+The logs are configured here.
