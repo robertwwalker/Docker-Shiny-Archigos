@@ -17,8 +17,8 @@ RUN R -e "install.packages(c('shinydashboard','DT','hrbrthemes','lubridate'), re
 COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
 COPY /app /srv/shiny-server/
 RUN rm /srv/shiny-server/index.html
-# Make the ShinyApp available at port 80
-EXPOSE 80
+# Make the ShinyApp available at port 3838
+EXPOSE 3838
 # Copy further configuration files into the Docker image
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 RUN ["chmod", "+x", "/usr/bin/shiny-server.sh"]
